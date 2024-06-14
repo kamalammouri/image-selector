@@ -1,0 +1,28 @@
+<!-- <div class="image-container"
+     (mousedown)="onMouseDown($event)"
+     (mousemove)="onMouseMove($event)"
+     (mouseup)="onMouseUp($event)">
+  <img src="assets/ScreenShot.png" alt="Selectable Image" #image>
+  <div *ngIf="isSelecting || selectionBox.width > 0"
+       class="selection"
+       [style.left.px]="selectionBox.x"
+       [style.top.px]="selectionBox.y"
+       [style.width.px]="selectionBox.width"
+       [style.height.px]="selectionBox.height"></div>
+</div> -->
+
+<div class="image-container"
+     (mousedown)="onMouseDown($event)"
+     (mousemove)="onMouseMove($event)"
+     (mouseup)="onMouseUp($event)">
+  <img src="assets/ScreenShot.png" alt="Selectable Image" #image>
+  <div *ngIf="isSelecting || (selectionBox.width > 0 && selectionBox.height > 0)"
+       class="selection"
+       [ngStyle]="{
+         left: selectionBox.x + 'px',
+         top: selectionBox.y + 'px',
+         width: selectionBox.width + 'px',
+         height: selectionBox.height + 'px',
+         backgroundColor: selectionColor
+       }"></div>
+</div>
