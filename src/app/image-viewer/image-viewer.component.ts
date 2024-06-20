@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-
+import { MarkerListComponent } from '../marker_list/marker_list.component';
+import { MarkerCreatorComponent } from '../marker_creator/marker_creator.component';
 @Component({
   selector: 'app-image-viewer',
   templateUrl: './image-viewer.component.html',
   styleUrls: ['./image-viewer.component.css'],
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, MarkerListComponent,MarkerCreatorComponent],
 }) export class ImageViewerComponent {
+
   @ViewChild('image') image!: ElementRef<HTMLImageElement>;
 
   isSelecting = false;
@@ -16,8 +17,8 @@ import { RouterOutlet } from '@angular/router';
   startPoint = { x: 0, y: 0 };
   selectionColor: string = this.getRandomColor();
   markers: { x: number, y: number, width: number, height: number, selectionColor: string, number: number }[] = [];
+  editedMarker: { x: number; y: number; width: number; height: number; selectionColor: string; number: number; } | null = null;
 
-  constructor() { }
 
   onMouseDown(event: MouseEvent): void {
     event.preventDefault();
@@ -83,4 +84,6 @@ import { RouterOutlet } from '@angular/router';
     }
     return color + '80'; // Adding 80 for 50% transparency
   }
+
+
 }

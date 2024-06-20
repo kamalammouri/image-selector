@@ -1,31 +1,16 @@
-<div class="image-container" 
-     (mousedown)="onMouseDown($event)" 
-     (mousemove)="onMouseMove($event)" 
-     (mouseup)="onMouseUp($event)" 
-     #imageContainer>
-     <img src="assets/ScreenShot.png" alt="Selectable Image" #image>
-     <div *ngIf="isSelecting && (selectionBox.width > 0 && selectionBox.height > 0)" 
-          class="selection"
-          [style.left.px]="selectionBox.x" 
-          [style.top.px]="selectionBox.y" 
-          [style.width.px]="selectionBox.width" 
-          [style.height.px]="selectionBox.height" 
-          [style.backgroundColor]="selectionColor">
+<div class="image-container mb-5" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
+     (mouseup)="onMouseUp($event)" #imageContainer>
+     <img class="img" src="assets/ScreenShot.png" alt="Selectable Image" #image>
+     <div *ngIf="isSelecting && (selectionBox.width > 0 && selectionBox.height > 0)" class="selection"
+          [style.left.px]="selectionBox.x" [style.top.px]="selectionBox.y" [style.width.px]="selectionBox.width"
+          [style.height.px]="selectionBox.height" [style.backgroundColor]="selectionColor">
      </div>
-     <div class="markers-container">
-          <div *ngFor="let marker of markers" class="marker" 
-               [style.left.px]="marker.x" 
-               [style.top.px]="marker.y" 
-               [style.width.px]="marker.width" 
-               [style.height.px]="marker.height" 
-               [style.backgroundColor]="marker.selectionColor">
-               <p class="marker-number">{{ marker.number }}</p>
-          </div>
-     </div>
+
+     <app-marker-creator [markers]="markers" [editedMarker]="editedMarker"/>
+     
+
 </div>
 
 @if(markers.length > 0) {
-     <div class="markers">
-          <p *ngFor="let marker of markers" class="marker-number">{{ marker.number }}</p>
-     </div>
+<app-marker-list [markers]="markers" (OnDeleteMarker)="markers = $event" (OnEditMarker)="editedMarker = $event"/>
 }
