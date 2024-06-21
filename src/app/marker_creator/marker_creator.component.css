@@ -2,6 +2,12 @@
   display: block;
 }
 
+ .markers-container {
+  position: static;
+  width: 100%;
+  height: 100%;
+} 
+
 
 .marker {
   position: absolute;
@@ -46,4 +52,14 @@
 
 .right-handle {
   right: -5px; /* Adjust position */
+}
+
+.top-handle {
+  top: -5px; /* Adjust position */
+  height: 0;
+}
+
+.bottom-handle {
+  bottom: -5px; /* Adjust position */
+  height: 200%;
 }

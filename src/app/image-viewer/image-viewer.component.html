@@ -1,10 +1,10 @@
 <div class="d-flex">
      <div class="w-50">
-          <div class="image-container mb-5" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
-               (mouseup)="onMouseUp($event)" #imageContainer>
+          <div class="image-container" (mousedown)="onMouseDown($event)"
+               (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp($event)" #imageContainer>
                <img class="img" src="assets/ScreenShot.png" alt="Selectable Image" #image>
                <div *ngIf="isSelecting && (selectionBox.width > 0 && selectionBox.height > 0)" class="selection"
-                    [style.left.px]="selectionBox.x" [style.top.px]="selectionBox.y"
+                    [style.left.px]="selectionBox.left" [style.top.px]="selectionBox.top"
                     [style.width.px]="selectionBox.width" [style.height.px]="selectionBox.height"
                     [style.backgroundColor]="selectionColor">
                </div>
@@ -12,9 +12,11 @@
      </div>
 
      @if(markers.length > 0) {
-     <app-marker-creator [markers]="markers" [editedMarker]="editedMarker" />
+     <app-marker-creator [markers]="markers" [editedMarker]="editedMarker" (OnResizeMarker)="editedMarker = $event"/>
+
      <div class="w-50">
-          <app-marker-list [markers]="markers" (OnDeleteMarker)="markers = $event" (OnEditMarker)="editedMarker = $event" />
+          <app-marker-list [markers]="markers" (OnDeleteMarker)="markers = $event"
+               (OnEditMarker)="editedMarker = $event" />
      </div>
      }
 </div>

@@ -13,11 +13,11 @@ import { MarkerCreatorComponent } from '../marker_creator/marker_creator.compone
   @ViewChild('image') image!: ElementRef<HTMLImageElement>;
 
   isSelecting = false;
-  selectionBox = { x: 0, y: 0, width: 0, height: 0 };
+  selectionBox = { left: 0, top: 0, width: 0, height: 0 };
   startPoint = { x: 0, y: 0 };
   selectionColor: string = this.getRandomColor();
-  markers: { x: number, y: number, width: number, height: number, selectionColor: string, number: number }[] = [];
-  editedMarker: { x: number; y: number; width: number; height: number; selectionColor: string; number: number; } | null = null;
+  markers: any[] = [];
+  editedMarker: any = null;
 
 
   onMouseDown(event: MouseEvent): void {
@@ -29,8 +29,10 @@ import { MarkerCreatorComponent } from '../marker_creator/marker_creator.compone
 
     if (!this.isSelecting) {
       this.isSelecting = true;
+      
       this.startPoint = { x: event.clientX - rect.left, y: event.clientY - rect.top };
-      this.selectionBox = { x: this.startPoint.x, y: this.startPoint.y, width: 0, height: 0 };
+      console.log("startPoint",this.startPoint);
+      this.selectionBox = { left: this.startPoint.x, top: this.startPoint.y, width: 0, height: 0 };
       this.selectionColor = this.getRandomColor(); // Generate new color
     }
   }
@@ -50,8 +52,8 @@ import { MarkerCreatorComponent } from '../marker_creator/marker_creator.compone
       this.selectionBox.height = Math.abs(currentY - this.startPoint.y);
 
       // Calculate x and y for top-left corner of the selection box
-      this.selectionBox.x = Math.min(currentX, this.startPoint.x);
-      this.selectionBox.y = Math.min(currentY, this.startPoint.y);
+      this.selectionBox.left = Math.min(currentX, this.startPoint.x);
+      this.selectionBox.top = Math.min(currentY, this.startPoint.y);
     }
   }
 
@@ -62,11 +64,12 @@ import { MarkerCreatorComponent } from '../marker_creator/marker_creator.compone
       this.isSelecting = false;
       if (this.selectionBox.width !== 0 && this.selectionBox.height !== 0) {
         // Add marker based on the center of the selection box
-        const centerX = this.selectionBox.x + this.selectionBox.width / 2;
-        const centerY = this.selectionBox.y + this.selectionBox.height / 2;
+        const centerX = this.selectionBox.left + this.selectionBox.width / 2;
+        const centerY = this.selectionBox.top + this.selectionBox.height / 2;
         this.markers.push({
-          x: centerX,
-          y: centerY,
+          startPoint : this.startPoint,
+          left: centerX,
+          top: centerY,
           width: this.selectionBox.width,
           height: this.selectionBox.height,
           selectionColor: this.selectionColor,
