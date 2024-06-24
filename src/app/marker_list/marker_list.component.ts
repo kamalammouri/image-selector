@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-marker-list',
@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
   imports: [
     CommonModule,
   ],
-  template: `<div class="container">
+  template: `<div class="container" *ngIf="markersView">
   <div class="row">
        <table class="table">
             <thead>
@@ -19,9 +19,9 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
                  </tr>
             </thead>
             <tbody>
-                 <tr *ngFor="let marker of markers">
+                 <tr *ngFor="let marker of markersView">
                       <th scope="row">{{marker.number}}</th>
-                      <td>start point : {{marker.startPoint | json}} | position : " left :{{marker.left}} , top {{marker.top}} , width {{marker.width}} , height {{marker.height}} " Image Dimensions : {{marker.imageDimensions | json}} Origine : {{marker.origin | json}}</td>
+                      <td>start point : {{marker.startPoint | json}} | position : {{marker.zone | json}}</td>
                       <td><button type="button" class="btn btn-primary"
                                 (click)="editMarker(marker.number)">
                                 <i class="bi bi-arrows-move"></i>
@@ -36,10 +36,19 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 </div>`,
   styleUrl: './marker_list.component.css'
 })
-export class MarkerListComponent {
+export class MarkerListComponent implements OnInit {
+
   @Input({ required: true }) markers: any[] = [];
   @Output() OnEditMarker = new EventEmitter<any>();
   @Output() OnDeleteMarker = new EventEmitter<any[]>();
+
+  markersView: any[] = [];
+
+  ngOnInit(): void {
+    this.markersView = this.markers.map((marker) => {
+      return { number: marker.number, startPoint: { adress: marker.startPoint.position, ...marker.startPoint.origin, }, zone: marker.origin }
+    })
+  }
 
   deleteMarker(number: number): void {
     this.markers = this.markers.filter(m => m.number !== number);
