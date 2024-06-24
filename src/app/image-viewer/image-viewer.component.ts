@@ -91,6 +91,17 @@ export class ImageViewerComponent implements AfterViewInit {
         width: Math.abs(currentX - this.startPoint.origin.x),
         height: Math.abs(currentY - this.startPoint.origin.y)
       }
+
+      // Determine the position based on mouse move
+      if (currentX > this.startPoint.x && currentY > this.startPoint.y) {
+        this.startPoint.position = 'top-left';
+      } else if (currentX > this.startPoint.x && currentY < this.startPoint.y) {
+        this.startPoint.position = 'bottom-left';
+      } else if (currentX < this.startPoint.x && currentY > this.startPoint.y) {
+        this.startPoint.position = 'top-right';
+      } else {
+        this.startPoint.position = 'bottom-right';
+      }
     }
   }
 
