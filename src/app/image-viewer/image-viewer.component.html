@@ -1,5 +1,4 @@
-<div class="d-flex">
-     <div class="w-50">
+<div class="">
           <div class="image-container" (mousedown)="onMouseDown($event)"
                (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp($event)" #imageContainer>
                <img class="img" src="assets/ScreenShot.png" alt="Selectable Image" #image>
@@ -9,8 +8,6 @@
                     [style.backgroundColor]="selectionColor">
                </div>
           </div>
-     </div>
-
      @if(markers.length > 0) {
      <app-marker-creator [markers]="markers" [editedMarker]="editedMarker" (OnResizeMarker)="editedMarker = $event"/>
 

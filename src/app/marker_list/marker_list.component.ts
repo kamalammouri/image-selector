@@ -21,7 +21,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
             <tbody>
                  <tr *ngFor="let marker of markers">
                       <th scope="row">{{marker.number}}</th>
-                      <td>start point : {{marker.startPoint | json}} | position : " left :{{marker.left}} , top {{marker.top}} , width {{marker.width}} , height {{marker.height}} "</td>
+                      <td>start point : {{marker.startPoint | json}} | position : " left :{{marker.left}} , top {{marker.top}} , width {{marker.width}} , height {{marker.height}} " Image Dimensions : {{marker.imageDimensions | json}} Origine : {{marker.origin | json}}</td>
                       <td><button type="button" class="btn btn-primary"
                                 (click)="editMarker(marker.number)">
                                 <i class="bi bi-arrows-move"></i>

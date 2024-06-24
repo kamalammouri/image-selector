@@ -14,8 +14,8 @@ export class ImageViewerComponent implements AfterViewInit {
   @ViewChild('image') image!: ElementRef<HTMLImageElement>;
 
   isSelecting = false;
-  selectionBox = { left: 0, top: 0, width: 0, height: 0 };
-  startPoint = { x: 0, y: 0, position: '' };
+  selectionBox = { left: 0, top: 0, width: 0, height: 0, origin: {} };
+  startPoint = { x: 0, y: 0, position: '', origin: { x: 0, y: 0 } };
   selectionColor: string = this.getRandomColor();
   markers: any[] = [];
   editedMarker: any = null;
@@ -34,13 +34,35 @@ export class ImageViewerComponent implements AfterViewInit {
     event.stopPropagation();
 
     const imageElement = this.image.nativeElement;
+    const scaleX = imageElement.naturalWidth / imageElement.offsetWidth;
+    const scaleY = imageElement.naturalHeight / imageElement.offsetHeight;
     const rect = imageElement.getBoundingClientRect();
 
     if (!this.isSelecting) {
       this.isSelecting = true;
 
-      this.startPoint = { x: event.clientX - rect.left, y: event.clientY - rect.top, position: '' };
-      this.selectionBox = { left: this.startPoint.x, top: this.startPoint.y, width: 0, height: 0 };
+      this.startPoint = {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+        position: '',
+        origin: {
+          x: (event.clientX - rect.left) * scaleX,
+          y: (event.clientY - rect.top) * scaleY
+        }
+      };
+
+      this.selectionBox = {
+        left: this.startPoint.x,
+        top: this.startPoint.y,
+        width: 0,
+        height: 0,
+        origin: {
+          left: this.startPoint.x * scaleX,
+          top: this.startPoint.y * scaleY,
+          width: 0,
+          height: 0
+        }
+      };
       this.selectionColor = this.getRandomColor(); // Generate new color
     }
   }
@@ -63,15 +85,11 @@ export class ImageViewerComponent implements AfterViewInit {
       this.selectionBox.left = Math.min(currentX, this.startPoint.x);
       this.selectionBox.top = Math.min(currentY, this.startPoint.y);
 
-      // Determine the position based on mouse move
-      if (currentX > this.startPoint.x && currentY > this.startPoint.y) {
-        this.startPoint.position = 'top-left';
-      } else if (currentX > this.startPoint.x && currentY < this.startPoint.y) {
-        this.startPoint.position = 'bottom-left';
-      } else if (currentX < this.startPoint.x && currentY > this.startPoint.y) {
-        this.startPoint.position = 'top-right';
-      } else {
-        this.startPoint.position = 'bottom-right';
+      this.selectionBox.origin = {
+        left :  Math.min(currentX, this.startPoint.origin.x),
+        top :  Math.min(currentY, this.startPoint.origin.y),
+        width :  Math.abs(currentX - this.startPoint.origin.x),
+        height :  Math.abs(currentY - this.startPoint.origin.y)
       }
     }
   }
@@ -83,6 +101,10 @@ export class ImageViewerComponent implements AfterViewInit {
       this.isSelecting = false;
       if (this.selectionBox.width !== 0 && this.selectionBox.height !== 0) {
         // Add marker based on the center of the selection box
+        const imageElement = this.image.nativeElement;
+        const scaleX = imageElement.naturalWidth / imageElement.offsetWidth;
+        const scaleY = imageElement.naturalHeight / imageElement.offsetHeight;
+
         const centerX = this.selectionBox.left + this.selectionBox.width / 2;
         const centerY = this.selectionBox.top + this.selectionBox.height / 2;
         this.markers.push({
@@ -93,6 +115,7 @@ export class ImageViewerComponent implements AfterViewInit {
           height: this.selectionBox.height,
           selectionColor: this.selectionColor,
           imageDimensions: this.imageDimensions,
+          origin: { left: centerX * scaleX, top: centerY * scaleY, width: this.selectionBox.width * scaleX, height: this.selectionBox.height * scaleY },
           number: this.markers.length + 1
         });
       }
