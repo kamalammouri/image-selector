@@ -86,10 +86,10 @@ export class ImageViewerComponent implements AfterViewInit {
       this.selectionBox.top = Math.min(currentY, this.startPoint.y);
 
       this.selectionBox.origin = {
-        left :  Math.min(currentX, this.startPoint.origin.x),
-        top :  Math.min(currentY, this.startPoint.origin.y),
-        width :  Math.abs(currentX - this.startPoint.origin.x),
-        height :  Math.abs(currentY - this.startPoint.origin.y)
+        left: Math.min(currentX, this.startPoint.origin.x),
+        top: Math.min(currentY, this.startPoint.origin.y),
+        width: Math.abs(currentX - this.startPoint.origin.x),
+        height: Math.abs(currentY - this.startPoint.origin.y)
       }
     }
   }
