@@ -40,26 +40,38 @@
   width: 10px; /* Adjust handle width */
   height: 100%;
   top: 0;
-  cursor: ew-resize; /* Horizontal resize cursor */
+  cursor: pointer; /* Horizontal resize cursor */
   z-index: 2; /* Ensure handles are above markers */
   display: flex;
   align-items: center;
 }
 
 .left-handle {
-  left: -5px; /* Adjust position */
+  left: 5px; /* Adjust position */
 }
 
 .right-handle {
-  right: -5px; /* Adjust position */
+  right: 5px; /* Adjust position */
 }
 
 .top-handle {
-  top: -5px; /* Adjust position */
+  top: 5px; /* Adjust position */
   height: 0;
 }
 
 .bottom-handle {
-  bottom: -5px; /* Adjust position */
+  bottom: 5px; /* Adjust position */
   height: 200%;
+}
+
+i{
+  font-size: 2rem;
+}
+
+
+.move-handle {
+  position: absolute;
+  top: -25px;
+  left: -15px;
+  cursor: pointer;
 }

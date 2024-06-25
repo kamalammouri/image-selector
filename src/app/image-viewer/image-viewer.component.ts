@@ -12,9 +12,8 @@ import { MarkerCreatorComponent } from '../marker_creator/marker_creator.compone
 export class ImageViewerComponent implements AfterViewInit {
 
   @ViewChild('image') image!: ElementRef<HTMLImageElement>;
-
   isSelecting = false;
-  selectionBox = { left: 0, top: 0, width: 0, height: 0, origin: {} };
+  selectionBox = { width: 0, height: 0, left: 0, top: 0, right: 0, bottom: 0, origin: {} };
   startPoint = { x: 0, y: 0, position: '', origin: { x: 0, y: 0 } };
   selectionColor: string = this.getRandomColor();
   markers: any[] = [];
@@ -52,13 +51,17 @@ export class ImageViewerComponent implements AfterViewInit {
       };
 
       this.selectionBox = {
-        left: this.startPoint.x,
-        top: this.startPoint.y,
         width: 0,
         height: 0,
+        right: this.startPoint.x,
+        bottom: this.startPoint.y,
+        left: this.startPoint.x,
+        top: this.startPoint.y,
         origin: {
           left: this.startPoint.x * scaleX,
           top: this.startPoint.y * scaleY,
+          right: this.startPoint.x * scaleX,
+          bottom: this.startPoint.y * scaleY,
           width: 0,
           height: 0
         }
@@ -85,9 +88,15 @@ export class ImageViewerComponent implements AfterViewInit {
       this.selectionBox.left = Math.min(currentX, this.startPoint.x);
       this.selectionBox.top = Math.min(currentY, this.startPoint.y);
 
+      // Calculate right and bottom properties
+      this.selectionBox.right = this.selectionBox.left + this.selectionBox.width;
+      this.selectionBox.bottom = this.selectionBox.top + this.selectionBox.height;
+
       this.selectionBox.origin = {
         left: Math.min(currentX, this.startPoint.origin.x),
         top: Math.min(currentY, this.startPoint.origin.y),
+        right: Math.max(currentX, this.startPoint.origin.x),
+        bottom: Math.max(currentY, this.startPoint.origin.y),
         width: Math.abs(currentX - this.startPoint.origin.x),
         height: Math.abs(currentY - this.startPoint.origin.y)
       }
@@ -118,15 +127,21 @@ export class ImageViewerComponent implements AfterViewInit {
 
         const centerX = this.selectionBox.left + this.selectionBox.width / 2;
         const centerY = this.selectionBox.top + this.selectionBox.height / 2;
+
+        this.selectionBox.right = this.selectionBox.left + this.selectionBox.width;
+        this.selectionBox.bottom = this.selectionBox.top + this.selectionBox.height;
+
         this.markers.push({
           startPoint: this.startPoint,
-          left: centerX,
-          top: centerY,
           width: this.selectionBox.width,
           height: this.selectionBox.height,
+          left: centerX,
+          top: centerY,
+          right: this.selectionBox.right,
+          bottom: this.selectionBox.bottom,
           selectionColor: this.selectionColor,
           imageDimensions: this.imageDimensions,
-          origin: { left: centerX * scaleX, top: centerY * scaleY, width: this.selectionBox.width * scaleX, height: this.selectionBox.height * scaleY },
+          origin: { left: centerX * scaleX, top: centerY * scaleY, right: this.selectionBox.right * scaleX, bottom: this.selectionBox.bottom * scaleY, width: this.selectionBox.width * scaleX, height: this.selectionBox.height * scaleY },
           number: this.markers.length + 1
         });
       }
@@ -140,5 +155,16 @@ export class ImageViewerComponent implements AfterViewInit {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color + '80'; // Adding 80 for 50% transparency
+  }
+
+
+  onEndEditing(Newmarker: any): void {
+    console.log('Newmarker',Newmarker,this.markers.find(marker => marker.number === Newmarker.number));
+
+    /* this.markers = this.markers.map((marker: any) => {
+      if (marker.number === Newmarker.number) {
+        marker = Newmarker;
+      }
+    });*/
   }
 }

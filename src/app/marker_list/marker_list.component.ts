@@ -45,6 +45,7 @@ export class MarkerListComponent {
   deleteMarker(number: number): void {
     this.markers = this.markers.filter(m => m.number !== number);
     this.OnDeleteMarker.emit(this.markers);
+    this.OnEditMarker.emit(null);
   }
   editMarker(number: number): void {
     const marker = this.markers.find(marker => marker.number === number);

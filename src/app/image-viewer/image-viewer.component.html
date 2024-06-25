@@ -8,11 +8,11 @@
                     [style.width.px]="selectionBox.width" [style.height.px]="selectionBox.height"
                     [style.backgroundColor]="selectionColor">
                </div>
+            <app-marker-creator *ngIf="markers" [markers]="markers" [editedMarker]="editedMarker" (OnResizeMarker)="onEndEditing($event)"/>
           </div>
      </div>
 
      @if(markers.length > 0) {
-     <app-marker-creator [markers]="markers" [editedMarker]="editedMarker" (OnResizeMarker)="editedMarker = $event"/>
 
      <div class="w-50">
           <app-marker-list [markers]="markers" (OnDeleteMarker)="markers = $event"
