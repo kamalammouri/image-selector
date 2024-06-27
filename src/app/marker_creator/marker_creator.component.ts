@@ -90,18 +90,29 @@ export class MarkerCreatorComponent {
       if (['right','left'].includes(this.resizeHandle)) {
         const newWidth = this.resizeInitialWidth + deltaX;
         const newLeft = this.resizeInitialLeft + (deltaX / 2);
-        if (this.editedMarker.left + newWidth / 2 <= this.imageContainerDimensions.width) {
+        if (this.editedMarker.left + newWidth / 2 <= this.imageContainerDimensions.width && newWidth > 10) {
           this.editedMarker.left = newLeft;
           this.editedMarker.width = newWidth;
         }
       } else if (this.resizeHandle === 'bottom') {
         const newHeight = this.resizeInitialHeight + deltaY;
         const newTop = this.resizeInitialTop + (deltaY / 2);
-        if (this.editedMarker.top + newHeight / 2 <= this.imageContainerDimensions.height) {
+        if (this.editedMarker.top + newHeight / 2 <= this.imageContainerDimensions.height && newHeight > 10) {
           this.editedMarker.top = newTop;
           this.editedMarker.height = newHeight;
         }
       }
+
+      const Newmarker = {
+        ...this.editedMarker,
+        origin: {
+          ...this.editedMarker.origin,
+          width : this.editedMarker.width * this.scale.scaleX,
+          height : this.editedMarker.height * this.scale.scaleY
+        }
+      };
+      // Emit the final resized marker state
+      this.OnResizeMarker.emit(Newmarker);
     }
   };
 
@@ -117,16 +128,6 @@ export class MarkerCreatorComponent {
       window.removeEventListener('mousemove', this.onResizeMove);
       window.removeEventListener('mouseup', this.onResizeEnd);
 
-      const Newmarker = {
-        ...this.editedMarker,
-        origin: {
-          ...this.editedMarker.origin,
-          width : this.editedMarker.width * this.scale.scaleX,
-          height : this.editedMarker.height * this.scale.scaleY
-        }
-      };
-      // Emit the final resized marker state
-      this.OnResizeMarker.emit(Newmarker);
     }
   };
 
@@ -158,6 +159,7 @@ export class MarkerCreatorComponent {
 
       const newLeft = this.moveInitialLeft + deltaX;
       const newTop = this.moveInitialTop + deltaY;
+      console.log('deltaX: ' + deltaX + ' y: ' + deltaY + ' newLeft: ' + newLeft + ' newTop: ' + newTop,'moveInitialLeft'+this.moveInitialLeft,'moveInitialTop'+this.moveInitialTop);
 
       if (newLeft + this.editedMarker.width / 2 <= this.imageContainerDimensions.width && newLeft >= (this.editedMarker.width / 2)) {
         this.editedMarker.left = newLeft;
@@ -166,6 +168,17 @@ export class MarkerCreatorComponent {
       if (newTop + this.editedMarker.height / 2 <= this.imageContainerDimensions.height && newTop >= (this.editedMarker.height / 2)) {
         this.editedMarker.top = newTop;
       }
+
+      const Newmarker = {
+        ...this.editedMarker,
+        origin: {
+          ...this.editedMarker.origin,
+          left : this.editedMarker.left * this.scale.scaleX,
+          top : this.editedMarker.top * this.scale.scaleY
+        }
+      };
+      // Emit the final marker state after movement
+      this.OnResizeMarker.emit(Newmarker);
     }
   };
 
@@ -179,16 +192,6 @@ export class MarkerCreatorComponent {
       // Unbind move and up events from window
       window.removeEventListener('mousemove', this.onMove);
       window.removeEventListener('mouseup', this.onMoveEnd);
-      const Newmarker = {
-        ...this.editedMarker,
-        origin: {
-          ...this.editedMarker.origin,
-          left : this.editedMarker.left * this.scale.scaleX,
-          top : this.editedMarker.top * this.scale.scaleY
-        }
-      };
-      // Emit the final marker state after movement
-      this.OnResizeMarker.emit(Newmarker);
     }
   };
 }

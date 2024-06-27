@@ -21,7 +21,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
             <tbody>
                  <tr *ngFor="let marker of markers">
                       <th scope="row">{{marker.number}}</th>
-                      <td>start point : {{ marker.startPoint.origin | json}} <br> start diriction : {{marker.startPoint.position}}  <br> zone : {{marker.origin | json}}</td>
+                      <td><!-- start point : {{ marker.startPoint.origin | json}} <br> start diriction : {{marker.startPoint.position}}  <br> zone : -->
+                      <ng-container *ngFor="let params of marker.origin | keyvalue">
+                        {{ params.key }} : {{ params.value}}
+                      </ng-container>
+
+                      </td>
                       <td><button type="button" class="btn btn-primary"
                                 (click)="editMarker(marker.number)">
                                 <i class="bi bi-arrows-move"></i>
