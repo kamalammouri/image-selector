@@ -13,14 +13,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
            [style.backgroundColor]="marker.selectionColor">
         <div *ngIf="editedMarker && editedMarker.number === marker.number" class="resize-handles">
           <div class="move-handle" (mousedown)="onMoveStart($event)">
-            <i class="bi bi-arrows-move text-dark"></i>
+            <i class="bi bi-arrows-move text-dark" (mousedown)="onMoveStart($event)"></i>
           </div>
           <!-- Bottom resize handle -->
-          <div class="resize-handle bottom-handle">
+          <div class="resize-handle bottom-handle" (mousedown)="onResizeStart('bottom', $event)" >
             <i (mousedown)="onResizeStart('bottom', $event)" class="bi bi-arrows-vertical text-dark"></i>
           </div>
           <!-- Right resize handle -->
-          <div class="resize-handle right-handle">
+          <div class="resize-handle right-handle" (mousedown)="onResizeStart('right', $event)">
             <i (mousedown)="onResizeStart('right', $event)" class="bi bi-arrows text-dark"></i>
           </div>
         </div>
