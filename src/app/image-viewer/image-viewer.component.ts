@@ -88,15 +88,13 @@ export class ImageViewerComponent implements AfterViewInit {
       this.selectionBox.left = Math.min(currentX, this.startPoint.x);
       this.selectionBox.top = Math.min(currentY, this.startPoint.y);
 
-      // Calculate right and bottom properties
-      this.selectionBox.right = this.selectionBox.left + this.selectionBox.width;
-      this.selectionBox.bottom = this.selectionBox.top + this.selectionBox.height;
+
 
       this.selectionBox.origin = {
         left: Math.min(currentX, this.startPoint.origin.x),
         top: Math.min(currentY, this.startPoint.origin.y),
-        right: Math.max(currentX, this.startPoint.origin.x),
-        bottom: Math.max(currentY, this.startPoint.origin.y),
+        right: 0,
+        bottom: 0,
         width: Math.abs(currentX - this.startPoint.origin.x),
         height: Math.abs(currentY - this.startPoint.origin.y)
       }
@@ -125,26 +123,25 @@ export class ImageViewerComponent implements AfterViewInit {
         const scaleX = imageElement.naturalWidth / imageElement.offsetWidth;
         const scaleY = imageElement.naturalHeight / imageElement.offsetHeight;
 
-        const centerX = this.selectionBox.left + this.selectionBox.width / 2;
-        const centerY = this.selectionBox.top + this.selectionBox.height / 2;
-
-        this.selectionBox.right = this.selectionBox.left + this.selectionBox.width;
-        this.selectionBox.bottom = this.selectionBox.top + this.selectionBox.height;
+        this.selectionBox.right = this.imageDimensions.width - (this.selectionBox.left + this.selectionBox.width) * scaleX;
+        this.selectionBox.bottom = this.imageDimensions.height - (this.selectionBox.top + this.selectionBox.height) * scaleY;
 
         this.markers.push({
           startPoint: this.startPoint,
           width: this.selectionBox.width,
           height: this.selectionBox.height,
-          left: centerX,
-          top: centerY,
+          left: this.selectionBox.left,
+          top: this.selectionBox.top,
           right: this.selectionBox.right,
           bottom: this.selectionBox.bottom,
           selectionColor: this.selectionColor,
           imageDimensions: this.imageDimensions,
-          origin: { left: centerX * scaleX, top: centerY * scaleY, right: this.selectionBox.right * scaleX, bottom: this.selectionBox.bottom * scaleY, width: this.selectionBox.width * scaleX, height: this.selectionBox.height * scaleY },
+          origin: { left: this.selectionBox.left * scaleX, top: this.selectionBox.top * scaleY, right: this.selectionBox.right , bottom: this.selectionBox.bottom , width: this.selectionBox.width * scaleX, height: this.selectionBox.height * scaleY },
           number: this.markers.length + 1
         });
       }
+
+
     }
   }
 
