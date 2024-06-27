@@ -13,18 +13,20 @@ export class ImageViewerComponent implements AfterViewInit {
 
   @ViewChild('image') image!: ElementRef<HTMLImageElement>;
   isSelecting = false;
-  selectionBox = { width: 0, height: 0, left: 0, top: 0, right: 0, bottom: 0, origin: {} };
+  selectionBox = { width: 0, height: 0, left: 0, top: 0, origin: {} };
   startPoint = { x: 0, y: 0, position: '', origin: { x: 0, y: 0 } };
   selectionColor: string = this.getRandomColor();
   markers: any[] = [];
   editedMarker: any = null;
   imageDimensions = { width: 0, height: 0 };
-
+  imageContainerDimensions = { width: 0, height: 0 };
   ngAfterViewInit() {
     this.image.nativeElement.onload = () => {
       this.imageDimensions.width = this.image.nativeElement.naturalWidth;
       this.imageDimensions.height = this.image.nativeElement.naturalHeight;
       console.log("Image dimensions:", this.imageDimensions);
+      this.imageContainerDimensions.width = this.image.nativeElement.offsetWidth;
+      this.imageContainerDimensions.height = this.image.nativeElement.offsetHeight;
     };
   }
 
@@ -53,15 +55,11 @@ export class ImageViewerComponent implements AfterViewInit {
       this.selectionBox = {
         width: 0,
         height: 0,
-        right: this.startPoint.x,
-        bottom: this.startPoint.y,
         left: this.startPoint.x,
         top: this.startPoint.y,
         origin: {
           left: this.startPoint.x * scaleX,
           top: this.startPoint.y * scaleY,
-          right: this.startPoint.x * scaleX,
-          bottom: this.startPoint.y * scaleY,
           width: 0,
           height: 0
         }
@@ -123,20 +121,21 @@ export class ImageViewerComponent implements AfterViewInit {
         const scaleX = imageElement.naturalWidth / imageElement.offsetWidth;
         const scaleY = imageElement.naturalHeight / imageElement.offsetHeight;
 
-        this.selectionBox.right = this.imageDimensions.width - (this.selectionBox.left + this.selectionBox.width) * scaleX;
-        this.selectionBox.bottom = this.imageDimensions.height - (this.selectionBox.top + this.selectionBox.height) * scaleY;
+        const centerX = this.selectionBox.left + this.selectionBox.width / 2;
+        const centerY = this.selectionBox.top + this.selectionBox.height / 2;
+
+        const right = this.imageDimensions.width - (this.selectionBox.left + this.selectionBox.width) * scaleX;
+        const bottom = this.imageDimensions.height - (this.selectionBox.top + this.selectionBox.height) * scaleY;
 
         this.markers.push({
           startPoint: this.startPoint,
           width: this.selectionBox.width,
           height: this.selectionBox.height,
-          left: this.selectionBox.left,
-          top: this.selectionBox.top,
-          right: this.selectionBox.right,
-          bottom: this.selectionBox.bottom,
+          left: centerX,
+          top: centerY,
           selectionColor: this.selectionColor,
           imageDimensions: this.imageDimensions,
-          origin: { left: this.selectionBox.left * scaleX, top: this.selectionBox.top * scaleY, right: this.selectionBox.right , bottom: this.selectionBox.bottom , width: this.selectionBox.width * scaleX, height: this.selectionBox.height * scaleY },
+          origin: {  width: this.selectionBox.width * scaleX, height: this.selectionBox.height * scaleY , left: this.selectionBox.left * scaleX, top: this.selectionBox.top * scaleY, right: right , bottom: bottom },
           number: this.markers.length + 1
         });
       }
@@ -156,12 +155,12 @@ export class ImageViewerComponent implements AfterViewInit {
 
 
   onEndEditing(Newmarker: any): void {
-    console.log('Newmarker',Newmarker,this.markers.find(marker => marker.number === Newmarker.number));
-
-    /* this.markers = this.markers.map((marker: any) => {
+    this.markers.forEach(marker =>
+     {
       if (marker.number === Newmarker.number) {
-        marker = Newmarker;
+       marker = Newmarker;
       }
-    });*/
+      return marker
+    })
   }
 }

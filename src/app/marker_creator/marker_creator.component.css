@@ -71,7 +71,8 @@ i{
 
 .move-handle {
   position: absolute;
-  top: -25px;
-  left: -15px;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   cursor: pointer;
 }
