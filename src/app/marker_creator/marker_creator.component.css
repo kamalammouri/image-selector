@@ -37,31 +37,23 @@
 
 .resize-handle {
   position: absolute;
-  width: 10px; /* Adjust handle width */
-  height: 100%;
-  top: 0;
   cursor: pointer; /* Horizontal resize cursor */
-  z-index: 2; /* Ensure handles are above markers */
-  display: flex;
-  align-items: center;
 }
 
 .left-handle {
-  left: 5px; /* Adjust position */
+  left: -5%; /* Adjust position */
 }
 
 .right-handle {
-  right: 5px; /* Adjust position */
+  right: -15px; /* Adjust position */
 }
 
 .top-handle {
-  top: 5px; /* Adjust position */
-  height: 0;
+  top: -5%; /* Adjust position */
 }
 
 .bottom-handle {
-  bottom: 5px; /* Adjust position */
-  height: 200%;
+  bottom: -22px; /* Adjust position */
 }
 
 i{
