@@ -20,13 +20,22 @@ export class ImageViewerComponent implements AfterViewInit {
   editedMarker: any = null;
   imageDimensions = { width: 0, height: 0 };
   imageContainerDimensions = { width: 0, height: 0 };
+  imageElement = this.image?.nativeElement
+  scaleX = 1;
+  scaleY = 1;
+
   ngAfterViewInit() {
     this.image.nativeElement.onload = () => {
+
       this.imageDimensions.width = this.image.nativeElement.naturalWidth;
       this.imageDimensions.height = this.image.nativeElement.naturalHeight;
-      console.log("Image dimensions:", this.imageDimensions);
+
       this.imageContainerDimensions.width = this.image.nativeElement.offsetWidth;
       this.imageContainerDimensions.height = this.image.nativeElement.offsetHeight;
+      this.imageElement = this.image.nativeElement
+      this.scaleX = this.imageElement.naturalWidth / this.imageElement.offsetWidth;
+      this.scaleY = this.imageElement.naturalHeight / this.imageElement.offsetHeight;
+      console.log("Image dimensions:", this.imageDimensions);
     };
   }
 
@@ -34,10 +43,7 @@ export class ImageViewerComponent implements AfterViewInit {
     event.preventDefault();
     event.stopPropagation();
 
-    const imageElement = this.image.nativeElement;
-    const scaleX = imageElement.naturalWidth / imageElement.offsetWidth;
-    const scaleY = imageElement.naturalHeight / imageElement.offsetHeight;
-    const rect = imageElement.getBoundingClientRect();
+    const rect = this.imageElement.getBoundingClientRect();
 
     if (!this.isSelecting) {
       this.isSelecting = true;
@@ -47,8 +53,8 @@ export class ImageViewerComponent implements AfterViewInit {
         y: event.clientY - rect.top,
         position: '',
         origin: {
-          x: (event.clientX - rect.left) * scaleX,
-          y: (event.clientY - rect.top) * scaleY
+          x: (event.clientX - rect.left) * this.scaleX,
+          y: (event.clientY - rect.top) * this.scaleY
         }
       };
 
@@ -58,8 +64,8 @@ export class ImageViewerComponent implements AfterViewInit {
         left: this.startPoint.x,
         top: this.startPoint.y,
         origin: {
-          left: this.startPoint.x * scaleX,
-          top: this.startPoint.y * scaleY,
+          left: this.startPoint.x * this.scaleX,
+          top: this.startPoint.y * this.scaleY,
           width: 0,
           height: 0
         }
@@ -72,8 +78,7 @@ export class ImageViewerComponent implements AfterViewInit {
     event.preventDefault();
 
     if (this.isSelecting) {
-      const imageElement = this.image.nativeElement;
-      const rect = imageElement.getBoundingClientRect();
+      const rect = this.imageElement.getBoundingClientRect();
 
       const currentX = event.clientX - rect.left;
       const currentY = event.clientY - rect.top;
@@ -89,13 +94,12 @@ export class ImageViewerComponent implements AfterViewInit {
 
 
       this.selectionBox.origin = {
-        left: Math.min(currentX, this.startPoint.origin.x),
-        top: Math.min(currentY, this.startPoint.origin.y),
-        right: 0,
-        bottom: 0,
-        width: Math.abs(currentX - this.startPoint.origin.x),
-        height: Math.abs(currentY - this.startPoint.origin.y)
-      }
+        width: this.selectionBox.width * this.scaleX,
+        height: this.selectionBox.height * this.scaleY,
+        left: this.selectionBox.left * this.scaleX,
+        top: this.selectionBox.top * this.scaleY
+      };
+
 
       // Determine the position based on mouse move
       if (currentX > this.startPoint.x && currentY > this.startPoint.y) {
@@ -117,15 +121,11 @@ export class ImageViewerComponent implements AfterViewInit {
       this.isSelecting = false;
       if (this.selectionBox.width !== 0 && this.selectionBox.height !== 0) {
         // Add marker based on the center of the selection box
-        const imageElement = this.image.nativeElement;
-        const scaleX = imageElement.naturalWidth / imageElement.offsetWidth;
-        const scaleY = imageElement.naturalHeight / imageElement.offsetHeight;
-
         const centerX = this.selectionBox.left + this.selectionBox.width / 2;
         const centerY = this.selectionBox.top + this.selectionBox.height / 2;
 
-        const right = this.imageDimensions.width - (this.selectionBox.left + this.selectionBox.width) * scaleX;
-        const bottom = this.imageDimensions.height - (this.selectionBox.top + this.selectionBox.height) * scaleY;
+/*         const right = this.imageDimensions.width - (this.selectionBox.left + this.selectionBox.width) * this.scaleX;
+        const bottom = this.imageDimensions.height - (this.selectionBox.top + this.selectionBox.height) * this.scaleY; */
 
         this.markers.push({
           startPoint: this.startPoint,
@@ -135,7 +135,7 @@ export class ImageViewerComponent implements AfterViewInit {
           top: centerY,
           selectionColor: this.selectionColor,
           imageDimensions: this.imageDimensions,
-          origin: {  width: this.selectionBox.width * scaleX, height: this.selectionBox.height * scaleY , left: this.selectionBox.left * scaleX, top: this.selectionBox.top * scaleY, right: right , bottom: bottom },
+          origin: { width: this.selectionBox.width * this.scaleX, height: this.selectionBox.height * this.scaleY, left: this.selectionBox.left * this.scaleX, top: this.selectionBox.top * this.scaleY },
           number: this.markers.length + 1
         });
       }
@@ -154,13 +154,13 @@ export class ImageViewerComponent implements AfterViewInit {
   }
 
 
-  onEndEditing(Newmarker: any): void {
-    this.markers.forEach(marker =>
-     {
-      if (marker.number === Newmarker.number) {
-       marker = Newmarker;
-      }
-      return marker
-    })
+  onEndEditing(newMarker: any): void {
+    // Find the index of the edited marker in the markers array
+    const index = this.markers.findIndex(marker => marker.number === newMarker.number);
+    if (index !== -1) {
+      // Replace the existing marker with the updated one
+      this.markers[index] = newMarker;
+      console.log('Updated markers:', this.markers);
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-marker-creator',
@@ -31,12 +31,13 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
   styleUrls: ['./marker_creator.component.css'],
 })
 export class MarkerCreatorComponent {
-  @Input({ required: true }) imageContainerDimensions : any = {width: 0, height: 0};
+  @Input({ required: true }) imageContainerDimensions: any = { width: 0, height: 0 };
   @Input({ required: true }) markers: any[] = [];
+  @Input({ required: true }) scale = { scaleX: 1, scaleY: 1 };
   @Input() editedMarker: any | null = null;
   @Output() OnResizeMarker = new EventEmitter<any>();
 
-  resizeHandle: 'right' | 'bottom' | null = null;
+  resizeHandle: 'right' | 'left' | 'bottom' | 'top' | null = null;
   resizeStartX: number = 0;
   resizeStartY: number = 0;
   resizing: boolean = false;
@@ -54,7 +55,7 @@ export class MarkerCreatorComponent {
   moveInitialLeft: number = 0;
   moveInitialTop: number = 0;
 
-  onResizeStart(handle: 'right' | 'bottom', event: MouseEvent): void {
+  onResizeStart(handle: 'right' | 'left' | 'bottom' | 'top' , event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -82,17 +83,22 @@ export class MarkerCreatorComponent {
     event.stopPropagation();
 
     if (this.editedMarker && this.resizing && this.resizeHandle) {
+
       const deltaX = event.clientX - this.resizeStartX;
       const deltaY = event.clientY - this.resizeStartY;
 
-      if (this.resizeHandle === 'right') {
+      if (['right','left'].includes(this.resizeHandle)) {
         const newWidth = this.resizeInitialWidth + deltaX;
-        if (this.editedMarker.left + newWidth <= this.imageContainerDimensions.width) {
+        const newLeft = this.resizeInitialLeft + (deltaX / 2);
+        if (this.editedMarker.left + newWidth / 2 <= this.imageContainerDimensions.width) {
+          this.editedMarker.left = newLeft;
           this.editedMarker.width = newWidth;
         }
       } else if (this.resizeHandle === 'bottom') {
         const newHeight = this.resizeInitialHeight + deltaY;
-        if (this.editedMarker.top + newHeight <= this.imageContainerDimensions.height) {
+        const newTop = this.resizeInitialTop + (deltaY / 2);
+        if (this.editedMarker.top + newHeight / 2 <= this.imageContainerDimensions.height) {
+          this.editedMarker.top = newTop;
           this.editedMarker.height = newHeight;
         }
       }
@@ -107,18 +113,20 @@ export class MarkerCreatorComponent {
       this.resizing = false;
       this.resizeHandle = null;
 
-      // Update initial dimensions and position after resizing
-      this.resizeInitialWidth = this.editedMarker.width;
-      this.resizeInitialHeight = this.editedMarker.height;
-      this.resizeInitialLeft = this.editedMarker.left;
-      this.resizeInitialTop = this.editedMarker.top;
-
       // Unbind move and up events from window
       window.removeEventListener('mousemove', this.onResizeMove);
       window.removeEventListener('mouseup', this.onResizeEnd);
 
+      const Newmarker = {
+        ...this.editedMarker,
+        origin: {
+          ...this.editedMarker.origin,
+          width : this.editedMarker.width * this.scale.scaleX,
+          height : this.editedMarker.height * this.scale.scaleY
+        }
+      };
       // Emit the final resized marker state
-      this.OnResizeMarker.emit(this.editedMarker);
+      this.OnResizeMarker.emit(Newmarker);
     }
   };
 
@@ -144,21 +152,21 @@ export class MarkerCreatorComponent {
     event.stopPropagation();
 
 
-      if (this.isMoving && this.editedMarker) {
-        const deltaX = event.clientX - this.moveStartX;
-        const deltaY = event.clientY - this.moveStartY;
+    if (this.isMoving && this.editedMarker) {
+      const deltaX = event.clientX - this.moveStartX;
+      const deltaY = event.clientY - this.moveStartY;
 
-        const newLeft = this.moveInitialLeft + deltaX;
-        const newTop = this.moveInitialTop + deltaY;
+      const newLeft = this.moveInitialLeft + deltaX;
+      const newTop = this.moveInitialTop + deltaY;
 
-        if (newLeft + this.editedMarker.width / 2 <= this.imageContainerDimensions.width && newLeft >= (this.editedMarker.width / 2)) {
-          this.editedMarker.left = newLeft;
-        }
-
-        if (newTop + this.editedMarker.height / 2 <= this.imageContainerDimensions.height && newTop >= (this.editedMarker.height / 2)) {
-          this.editedMarker.top = newTop;
-        }
+      if (newLeft + this.editedMarker.width / 2 <= this.imageContainerDimensions.width && newLeft >= (this.editedMarker.width / 2)) {
+        this.editedMarker.left = newLeft;
       }
+
+      if (newTop + this.editedMarker.height / 2 <= this.imageContainerDimensions.height && newTop >= (this.editedMarker.height / 2)) {
+        this.editedMarker.top = newTop;
+      }
+    }
   };
 
   onMoveEnd = (event: MouseEvent): void => {
@@ -171,19 +179,14 @@ export class MarkerCreatorComponent {
       // Unbind move and up events from window
       window.removeEventListener('mousemove', this.onMove);
       window.removeEventListener('mouseup', this.onMoveEnd);
-
       const Newmarker = {
         ...this.editedMarker,
-        left : this.editedMarker.left,
-        top : this.editedMarker.top,
-        origin:{
+        origin: {
           ...this.editedMarker.origin,
-          left : this.editedMarker.left * this.editedMarker.width / this.imageContainerDimensions.width,
-          top : this.editedMarker.top * this.editedMarker.height / this.imageContainerDimensions.height
+          left : this.editedMarker.left * this.scale.scaleX,
+          top : this.editedMarker.top * this.scale.scaleY
         }
       };
-      console.log('Newmarker', Newmarker);
-
       // Emit the final marker state after movement
       this.OnResizeMarker.emit(Newmarker);
     }

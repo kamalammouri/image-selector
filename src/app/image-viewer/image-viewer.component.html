@@ -12,6 +12,7 @@
                           [markers]="markers"
                           [editedMarker]="editedMarker"
                           [imageContainerDimensions]="imageContainerDimensions"
+                          [scale] = "{ scaleX, scaleY }"
                           (OnResizeMarker)="onEndEditing($event)">
       </app-marker-creator>
     </div>
