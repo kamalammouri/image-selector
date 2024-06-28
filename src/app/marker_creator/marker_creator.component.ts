@@ -159,7 +159,7 @@ export class MarkerCreatorComponent {
 
       const newLeft = this.moveInitialLeft + deltaX;
       const newTop = this.moveInitialTop + deltaY;
-      console.log('deltaX: ' + deltaX + ' y: ' + deltaY + ' newLeft: ' + newLeft + ' newTop: ' + newTop,'moveInitialLeft'+this.moveInitialLeft,'moveInitialTop'+this.moveInitialTop);
+      console.log('(origin.width / 2): ' + (this.editedMarker.origin.width / 2) + '(origin.height / 2): ' + (this.editedMarker.origin.height / 2),' newLeft: ' + newLeft + ' newTop: ' + newTop,'moveInitialLeft'+this.moveInitialLeft,'moveInitialTop'+this.moveInitialTop);
 
       if (newLeft + this.editedMarker.width / 2 <= this.imageContainerDimensions.width && newLeft >= (this.editedMarker.width / 2)) {
         this.editedMarker.left = newLeft;
@@ -168,13 +168,14 @@ export class MarkerCreatorComponent {
       if (newTop + this.editedMarker.height / 2 <= this.imageContainerDimensions.height && newTop >= (this.editedMarker.height / 2)) {
         this.editedMarker.top = newTop;
       }
+      //TODO fix left and top values
 
       const Newmarker = {
         ...this.editedMarker,
         origin: {
           ...this.editedMarker.origin,
-          left : this.editedMarker.left * this.scale.scaleX,
-          top : this.editedMarker.top * this.scale.scaleY
+          left : this.editedMarker.left * this.scale.scaleX - (this.editedMarker.origin.width / 2),
+          top : this.editedMarker.top * this.scale.scaleY - (this.editedMarker.origin.height / 2)
         }
       };
       // Emit the final marker state after movement
