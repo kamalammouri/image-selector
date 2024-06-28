@@ -23,7 +23,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                       <th scope="row">{{marker.number}}</th>
                       <td><!-- start point : {{ marker.startPoint.origin | json}} <br> start diriction : {{marker.startPoint.position}}  <br> zone : -->
                       <ng-container *ngFor="let params of marker.origin | keyvalue">
-                        {{ params.key }} : {{ params.value}}
+                        <p>{{ params.key }} : {{ params.value}}</p>
                       </ng-container>
 
                       </td>
