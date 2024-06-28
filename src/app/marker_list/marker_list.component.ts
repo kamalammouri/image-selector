@@ -29,7 +29,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                       </td>
                       <td><button type="button" class="btn btn-primary"
                                 (click)="editMarker(marker.number)">
-                                <i class="bi bi-arrows-move"></i>
+                                <i class="bi bi-tools"></i>
                               </button></td>
                       <td><button type="button" class="btn btn-danger"
                                 (click)="deleteMarker(marker.number)">
